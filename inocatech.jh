@@ -1,0 +1,370 @@
+
+entity Beneficiary {
+  uuid UUID required unique
+  status DefaultStatus
+  firstName String maxlength(50)
+  lastName String maxlength(50)
+  cin String minlength(6) maxlength(12)
+  iban String maxlength(32)
+  phoneNumber String maxlength(13)
+  email String minlength(5) maxlength(254)
+  walletHolder UUID
+  createdBy String
+  createdDate Instant
+  lastModifiedBy String
+  lastModifiedDate Instant
+}
+entity CacheData {
+  walletHolder UUID
+  key String maxlength(50)
+  value TextBlob
+  createdDate Instant
+}
+entity Device {
+  uuid UUID required
+  deviceUuid String maxlength(36)
+  type String maxlength(100)
+  manufacturer String maxlength(100)
+  model String maxlength(100)
+  os String maxlength(100)
+  appVersion String maxlength(100)
+  inactive Boolean
+  createdBy String
+  createdDate Instant
+  lastModifiedBy String
+  lastModifiedDate Instant
+}
+entity FailedAttempt {
+  login String maxlength(50)
+  ipAddress String maxlength(50)
+  isAfterLock Boolean
+  app App
+  action Action
+  device UUID
+  createdDate Instant
+  reason String maxlength(100)
+}
+entity FailedAttemptHistory {
+  login String maxlength(50)
+  ipAddress String maxlength(50)
+  isAfterLock Boolean
+  app App
+  action Action
+  device UUID
+  createdDate Instant
+  reason String maxlength(100)
+}
+entity IncomingCall {
+  partner Partner
+  api String maxlength(255)
+  method HttpMethod
+  requestHeaders TextBlob
+  requestBody TextBlob
+  createdDate Instant
+  responseStatusCode Integer max(999)
+  responseTime Instant,
+  walletHolder UUID,
+  createdBy String
+  createdDate Instant
+}
+entity Notification {
+  uuid UUID
+  walletHolder UUID
+  heading String maxlength(100)
+  status NotificationStatus
+  content String maxlength(254)
+  data String maxlength(254)
+  language String maxlength(2)
+  createdDate Instant
+}
+entity OneTimePassword {
+  uuid UUID required unique
+  user String maxlength(50)
+  code String maxlength(12)
+  status OtpStatus
+  expiry Instant
+  createdDate Instant
+}
+entity Organisation {
+  name String required maxlength(50)
+  type OrgType
+  parent String maxlength(50)
+  location String maxlength(50)
+  headcount Integer
+  createdBy String
+  createdDate Instant
+}
+entity PartnerCall {
+  partner Partner required
+  api String maxlength(255)
+  method HttpMethod
+  requestHeaders TextBlob
+  requestBody TextBlob
+  requestTime Instant
+  responseStatusCode Integer max(999)
+  responseHeaders TextBlob
+  responseBody TextBlob
+  responseTime Instant
+  correlationId String maxlength(36)
+  queryParam String maxlength(255),
+  walletHolder UUID,
+  createdBy String
+  createdDate Instant
+}
+entity ServiceClient {
+  clientId UUID
+  type AccountType
+  apiKey UUID unique
+  status DefaultStatus
+  note String maxlength(100)
+  createdDate Instant
+  lastModifiedDate Instant
+}
+entity Transaction {
+  uuid UUID required unique
+  type TransactionType
+  status TransactionStatus
+  direction Direction
+  amount BigDecimal
+  description String maxlength(100)
+  fee BigDecimal
+  commission BigDecimal
+  currency String maxlength(3)
+  counterpartyType CounterpartyType
+  counterpartyId String maxlength(36)
+  entryDate LocalDate
+  effectiveDate LocalDate
+  startTime Instant
+  endTime Instant
+  parent UUID
+  reference String maxlength(12)
+  externalId String maxlength(36)
+  partnerToken String maxlength(50)
+  wallet UUID
+  createdBy String
+  createdDate Instant
+  lastModifiedBy String
+  lastModifiedDate Instant
+}
+entity UserAccess {
+  login String maxlength(50)
+  ipAddress String maxlength(50)
+  device UUID
+  createdDate Instant
+}
+entity UserPreference {
+  app App
+  name String maxlength(50)
+  setting String maxlength(100)
+  createdDate Instant
+}
+entity Wallet {
+  uuid UUID required unique
+  type WalletType
+  status WalletStatus
+  level AccountLevel
+  iban String unique maxlength(32)
+  currency String maxlength(3)
+  balance BigDecimal
+  balancesAsOf Instant
+  externalId String maxlength(36)
+  walletHolder UUID
+  createdBy String
+  createdDate Instant
+  lastModifiedBy String
+  lastModifiedDate Instant
+}
+entity WalletHolder {
+  uuid UUID required unique
+  type AccountType
+  status AccountStatus
+  phoneNumber String maxlength(13)
+  network Network
+  tag String unique maxlength(50)
+  firstName String maxlength(50)
+  lastName String maxlength(50)
+  onboarding OnboardingStatus
+  externalId String maxlength(36)
+  email String minlength(5) maxlength(254)
+  dateOfBirth LocalDate
+  sex Sex
+  createdBy String
+  createdDate Instant
+  lastModifiedBy String
+  lastModifiedDate Instant
+  loginStatus LoginStatus
+}
+
+enum DefaultStatus {
+  PENDING,
+  ACTIVE,
+  BLOCKED,
+  DELETED
+}
+enum App {
+  MOBILE,
+  WEB,
+  MERCHANT,
+  AGENT,
+  PORTAL
+}
+enum Action {
+  LOGIN,
+  PHONENUMBER_CHECK,
+  EMAIL_CHECK,
+  PASSWORD_RESET,
+  DEVICE_CHECK,
+  TRANSACTION
+}
+enum Partner {
+  ORANGE,
+  WAVE,
+  FREE,
+  PAYPAL,
+  STRIPE,
+  OTHER
+}
+enum HttpMethod {
+  GET,
+  POST,
+  PUT,
+  DELETE,
+  PATCH
+}
+enum RequestStatus {
+  PENDING,
+  SENT,
+  PROCESSED,
+  FAILED
+}
+enum NotificationStatus {
+  PENDING,
+  REQUESTED,
+  PROCESSED,
+  FAILED
+}
+enum OtpStatus {
+  PENDING,
+  VALID,
+  REJECTED,
+  EXPIRED
+}
+enum OrgType {
+  UNIVERSITY,
+  CORPORATION,
+  NONPROFIT,
+  GOVERNMENT,
+  OTHER
+}
+enum AccountType {
+  CUSTOMER,
+  MERCHANT,
+  AGENT,
+  INTERNAL
+}
+enum TransactionType {
+  PAY,
+  RECEIVE,
+  WIRE_IN,
+  WIRE_OUT,
+  TRANSFER_IN,
+  TRANSFER_OUT,
+  CASH_IN,
+  CASH_OUT,
+  FEE,
+  REBATE,
+  COMMISSION
+}
+enum TransactionStatus {
+  PENDING,
+  TO_CONFIRM,
+  CONFIRMED,
+  REJECTED,
+  PARTNER_CONFIRMED,
+  PARTNER_REJECTED,
+  IN_PROGRESS,
+  PROCESSED,
+  FAILED
+}
+enum Direction {
+  DEBIT,
+  CREDIT
+}
+enum CounterpartyType {
+  WALLET,
+  CARD,
+  BENEFICIARY,
+  RECIPIENT
+}
+enum WalletType {
+  PRIMARY,
+  SAVINGS,
+  SECONDARY
+}
+enum WalletStatus {
+  PENDING,
+  ACTIVE,
+  REJECTED,
+  BLOCKED,
+  CLOSED
+}
+enum AccountLevel {
+  ONE,
+  TWO,
+  THREE
+}
+enum AccountStatus {
+  PENDING,
+  ACTIVE,
+  REJECTED,
+  BLOCKED,
+  CLOSED
+}
+enum Network {
+  ORANGE,
+  FREE,
+  EXPRESSO,
+  WAVE
+  OTHER
+}
+enum OnboardingStatus {
+  PENDING,
+  PERSONAL_INFO,
+  CREATE_INTERNAL_WALLET,
+  ACTIVATE_CUSTOMER_PARTNER_SIDE,
+  PRE_CREATE_CUSTOMER_PARTNER_SIDE,
+  SET_PASSWORD,
+  CREATE_EXTERNAL_WALLET,
+  CONFIRM_OTP
+}
+enum Sex {
+  M,
+  F
+}
+enum LoginStatus {
+  LOGIN_LOCKED,
+  LOGIN_UNLOCKED,
+  LOGIN_LOCKED_FULL,
+  LOGIN_DEVICE_LOCKED,
+  DEVICE_FLAGGED
+}
+relationship OneToOne {
+  WalletHolder{user(login)} to User with builtInEntity
+}
+
+
+// Set pagination options
+paginate CacheData, FailedAttempt, FailedAttemptHistory, IncomingCall, Notification, OneTimePassword, PartnerCall, Transaction, UserAccess, Wallet, WalletHolder with pagination
+service  CacheData, FailedAttempt, FailedAttemptHistory, IncomingCall, Notification, OneTimePassword, PartnerCall, ServiceClient, Transaction, UserAccess, Wallet, WalletHolder with serviceImpl
+
+
+
+
+// Use Data Transfer Objects (DTO)
+// dto * with mapstruct
+
+// Set service options to all except few
+service all with serviceImpl
+
+// Set an angular suffix
+// angularSuffix * with mySuffix
